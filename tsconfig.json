@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "isolatedModules": true,
+    "jsx": "react",
+    "lib": ["esnext", "dom"],
+    "esModuleInterop": true,
+    "downlevelIteration": true
+  }
+}
