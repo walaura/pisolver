@@ -1,14 +1,14 @@
 import React from "react";
-import { Tile } from "./Tile";
-import { PossibleRows, Row } from "../game/base";
+
 import stylex from "@stylexjs/stylex";
 import Flexbox from "../styles/Flexbox";
+import { Item, Line, PossibleLines } from "../game/base";
 
 export type Debug = {
-  rows?: PossibleRows;
-  validRows?: PossibleRows;
-  result?: Row;
-  currentRow?: Row;
+  rows?: PossibleLines;
+  validRows?: PossibleLines;
+  result?: Line;
+  currentRow?: Line;
 };
 
 const styles = stylex.create({
@@ -17,8 +17,22 @@ const styles = stylex.create({
     top: 0,
     left: 0,
     border: "2px solid #ddd",
+    fontSize: ".2rem",
   },
 });
+
+function Tile({ item }: { item: Item }) {
+  if (item === null) {
+    return "🌫️";
+  }
+  if (item === "x") {
+    return "❎";
+  }
+  if (item === "o") {
+    return "⭕";
+  }
+  return item;
+}
 
 export function CheatSheet({
   debug: { rows = [], result = [], currentRow = [], validRows = [] } = {},
