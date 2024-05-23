@@ -49,6 +49,9 @@ const justifyStyles = stylex.create({
   end: {
     justifyContent: "flex-end",
   },
+  between: {
+    justifyContent: "space-between",
+  },
 });
 
 export default function Flexbox({
@@ -68,7 +71,7 @@ export default function Flexbox({
   grow?: boolean;
   fit?: boolean;
   align?: "center" | "start" | "end" | "unset";
-  justify?: "center" | "start" | "end";
+  justify?: "center" | "start" | "end" | "between";
 }) {
   return (
     <div

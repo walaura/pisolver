@@ -1,4 +1,4 @@
-import React, { useState, useTransition } from "react";
+import React, { useState } from "react";
 import { useStore, useStoreActions } from "../game/store";
 import { CheatSheet } from "./CheatSheet";
 import stylex from "@stylexjs/stylex";
@@ -41,7 +41,7 @@ const styles = stylex.create({
     width: "calc((var(--tile-size)*2) + 16px)",
   },
   nextNumber: {
-    color: "blue",
+    color: "#12fff7",
   },
 });
 
@@ -53,39 +53,13 @@ export function Board() {
     verticalLines,
     horizontalLines,
     nextLines,
-    isSolving,
   } = useStore();
-  const {
-    solveHorizontalLine,
-    solveVerticalLine,
-    solveNextLines,
-    pauseSolving,
-  } = useStoreActions();
+  const { solveHorizontalLine, solveVerticalLine } = useStoreActions();
   const [debug, setDebug] = useState(null);
 
   const nextLine = nextLines[0];
-  const [, startTransition] = useTransition();
   return (
     <div {...stylex.props(styles.board)}>
-      {isSolving ? (
-        <button
-          onClick={() => {
-            pauseSolving();
-          }}
-        >
-          stop
-        </button>
-      ) : (
-        <button
-          onClick={() => {
-            startTransition(() => {
-              solveNextLines();
-            });
-          }}
-        >
-          Rank
-        </button>
-      )}
       {debug && <CheatSheet debug={debug} onClose={() => setDebug(null)} />}
       <div style={{ display: "flex", flexDirection: "row" }}>
         <div {...stylex.props(styles.spacer)} />
