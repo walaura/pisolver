@@ -9,6 +9,7 @@ export type Debug = {
   validRows?: PossibleLines;
   result?: Line;
   currentRow?: Line;
+  didAddToSolution?: boolean;
 };
 
 const styles = stylex.create({
@@ -41,6 +42,7 @@ export function CheatSheet({
     result = [],
     currentRow = [],
     validRows = [],
+    didAddToSolution,
   } = {},
   onClose,
 }: {
@@ -58,6 +60,8 @@ export function CheatSheet({
           <Tile item={item} key={index} />
         ))}
         <button onClick={onClose}>Close</button>
+        <hr />
+        {didAddToSolution === true ? "added" : null}
         <hr />
         <Flexbox direction="row">
           <div>

@@ -57,5 +57,13 @@ export function makePossibleLinesWithGaps(outerGaps: GapList, row: Position) {
 }
 
 export function isLineSolved(line: Line) {
-  return line.every((item) => item !== null);
+  return !line.includes(null);
+}
+
+export function getSolvedLineItems(line: Line) {
+  return line.filter((item) => item !== null).length;
+}
+
+export function doLinesMatch(a: Line, b: Line) {
+  return a.every((item, index) => item === b[index]);
 }

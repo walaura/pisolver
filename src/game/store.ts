@@ -1,18 +1,47 @@
 import { useSyncExternalStore } from "react";
 import { Debug } from "../game-ui/CheatSheet";
-import { Position, State } from "./base";
-import { solveVerticalLine, solveHorizontalLine } from "./solve";
+import { Board, Direction, Position, PossibleLines } from "./base";
+import {
+  solveVerticalLine,
+  solveHorizontalLine,
+  rankLines,
+  solveNextLine,
+} from "./solve";
+
+export type NextLines = {
+  direction: Direction;
+  line: number;
+  score: number;
+};
+
+export type LineStore = {
+  possibleLines: PossibleLines[];
+  solvedLines: boolean[];
+  size: number;
+};
+
+export type State = {
+  isSolving: boolean;
+  horizontalPositions: Position[];
+  verticalPositions: Position[];
+  verticalLines: LineStore;
+  horizontalLines: LineStore;
+  board: Board;
+  nextLines: NextLines[];
+};
 
 const makeReducerStore = (
   horizontalPositions: Position[],
   verticalPositions: Position[]
 ) => {
   let store: State = {
+    isSolving: false,
     horizontalPositions,
     verticalPositions,
     board: Array(verticalPositions.length)
       .fill(null)
       .map(() => Array(horizontalPositions.length).fill(null)),
+    nextLines: [],
     verticalLines: {
       possibleLines: [],
       size: verticalPositions.length,
@@ -52,6 +81,49 @@ const makeReducerStore = (
       store = newStore;
       notify();
       return debug;
+    },
+    solveNextLines: () => {
+      let maxIndex = 0;
+      store.isSolving = true;
+      const loop = () => {
+        maxIndex++;
+        const [newStore] = solveNextLine(store);
+        store = { ...newStore };
+        notify();
+        if (!store.isSolving) {
+          console.log("pawse");
+          notify();
+          return;
+        }
+        if (store.nextLines.length === 0) {
+          store.isSolving = false;
+          console.log("done");
+          notify();
+          return;
+        }
+        if (maxIndex > 1000) {
+          store.isSolving = false;
+          console.log("stacc");
+          notify();
+          return;
+        }
+        requestAnimationFrame(loop);
+      };
+      loop();
+    },
+    pauseSolving: () => {
+      store.isSolving = false;
+      notify();
+    },
+    solveNextLine: (): Debug => {
+      const [newStore, debug] = solveNextLine(store);
+      store = { ...newStore };
+      notify();
+      return debug;
+    },
+    rankLines: () => {
+      store = rankLines(store);
+      notify();
     },
   };
 };
@@ -96,5 +168,8 @@ export const useStoreActions = () => {
   return {
     solveVerticalLine: STORE.solveVerticalLine,
     solveHorizontalLine: STORE.solveHorizontalLine,
+    solveNextLine: STORE.solveNextLine,
+    solveNextLines: STORE.solveNextLines,
+    pauseSolving: STORE.pauseSolving,
   };
 };
