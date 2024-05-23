@@ -5,18 +5,25 @@ import {
   getPossibleLines,
   getValidPossibleLines,
   getCommonItemsAcrossLines,
+  isLineSolved,
 } from "./lines";
+
+// const rankLines = (store: State) => {};
 
 const solveLine =
   (what: "row" | "col") =>
   (store: State, lineIndex: number): [State, Debug] => {
-    // backwards on purpose
-    const size = what === "row" ? store.colSize : store.rowSize;
-    const line = what === "row" ? store.rows[lineIndex] : store.cols[lineIndex];
+    const lineStore =
+      what === "row" ? store.verticalLines : store.horizontalLines;
+    const size = lineStore.size;
+    const line =
+      what === "row"
+        ? store.verticalPositions[lineIndex]
+        : store.horizontalPositions[lineIndex];
     const getLine = what === "row" ? getRow : getCol;
     const writeLine = what === "row" ? writeRow : writeCol;
-    const maybePossibleLines =
-      what === "row" ? store.possibleRows : store.possibleCols;
+    const maybePossibleLines = lineStore.possibleLines;
+    const solvedLines = lineStore.solvedLines;
 
     let possibleLines = maybePossibleLines[lineIndex];
     if (!possibleLines) {
@@ -27,9 +34,8 @@ const solveLine =
     const currentLine = getLine(store.board, lineIndex);
     const validLines = getValidPossibleLines(possibleLines, currentLine);
     const result = getCommonItemsAcrossLines(validLines);
-
     const debug = {
-      rows: possibleLines,
+      verticalPositions: possibleLines,
       currentRow: currentLine,
       validRows: validLines,
     };
@@ -41,6 +47,9 @@ const solveLine =
 
     maybePossibleLines[lineIndex] = validLines;
     store.board = writeLine(store.board, lineIndex, result);
+    if (isLineSolved(result)) {
+      solvedLines[lineIndex] = true;
+    }
 
     return [
       store,

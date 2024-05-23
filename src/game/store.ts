@@ -3,17 +3,26 @@ import { Debug } from "../game-ui/CheatSheet";
 import { Position, State } from "./base";
 import { solveRow, solveCol } from "./solve";
 
-const makeReducerStore = (cols: Position[], rows: Position[]) => {
+const makeReducerStore = (
+  horizontalPositions: Position[],
+  verticalPositions: Position[]
+) => {
   let store: State = {
-    cols,
-    rows,
-    colSize: cols.length,
-    rowSize: rows.length,
-    board: Array(rows.length)
+    horizontalPositions,
+    verticalPositions,
+    board: Array(verticalPositions.length)
       .fill(null)
-      .map(() => Array(cols.length).fill(null)),
-    possibleCols: [],
-    possibleRows: [],
+      .map(() => Array(horizontalPositions.length).fill(null)),
+    verticalLines: {
+      possibleLines: [],
+      size: horizontalPositions.length,
+      solvedLines: Array(verticalPositions.length).fill(false),
+    },
+    horizontalLines: {
+      possibleLines: [],
+      size: verticalPositions.length,
+      solvedLines: Array(horizontalPositions.length).fill(false),
+    },
   };
 
   const subs = new Set<() => void>();

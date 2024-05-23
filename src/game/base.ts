@@ -5,14 +5,18 @@ export type Board = Line[];
 
 export type Position = number[];
 
+export type LineStore = {
+  possibleLines: PossibleLines[];
+  solvedLines: boolean[];
+  size: number;
+};
+
 export type State = {
-  cols: Position[];
-  rows: Position[];
-  colSize: number;
-  rowSize: number;
+  horizontalPositions: Position[];
+  verticalPositions: Position[];
   board: Board;
-  possibleCols: PossibleLines[];
-  possibleRows: PossibleLines[];
+  verticalLines: LineStore;
+  horizontalLines: LineStore;
 };
 
 export type Gap = number[];

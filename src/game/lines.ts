@@ -11,10 +11,10 @@ export function getPossibleLines(position: Position, size: number): Line[] {
 }
 
 export const getValidPossibleLines = (
-  rows: Line[],
+  verticalPositions: Line[],
   currentLine: Line
 ): Line[] => {
-  return rows.filter((row) => {
+  return verticalPositions.filter((row) => {
     return row.every((item, index) => {
       return currentLine[index] === null || item === currentLine[index];
     });
@@ -54,4 +54,8 @@ export function makePossibleLinesWithGaps(outerGaps: GapList, row: Position) {
     results.push(makeLine(gap, row));
   });
   return results;
+}
+
+export function isLineSolved(line: Line) {
+  return line.every((item) => item !== null);
 }

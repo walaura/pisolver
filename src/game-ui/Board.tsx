@@ -46,6 +46,10 @@ const styles = stylex.create({
     gap: 4,
     cursor: "pointer",
   },
+  solvedNumbers: {
+    opacity: 0.2,
+    pointerEvents: "none",
+  },
   rowNumbers: {
     display: "flex",
     alignItems: "center",
@@ -76,7 +80,13 @@ const styles = stylex.create({
 });
 
 export function Board() {
-  const { board, cols, rows } = useStore();
+  const {
+    board,
+    horizontalPositions,
+    verticalPositions,
+    horizontalLines,
+    verticalLines,
+  } = useStore();
   const { solveRow, solveCol } = useStoreActions();
   const [debug, setDebug] = useState(null);
   return (
@@ -84,13 +94,17 @@ export function Board() {
       {debug && <CheatSheet debug={debug} onClose={() => setDebug(null)} />}
       <div style={{ display: "flex", flexDirection: "row" }}>
         <div {...stylex.props(styles.spacer)} />
-        {cols.map((col, index) => (
+        {horizontalPositions.map((col, index) => (
           <div
             onClick={() => {
               setDebug(solveCol(index));
             }}
             key={index}
-            {...stylex.props(styles.colNumbers, styles.numbers)}
+            {...stylex.props(
+              styles.colNumbers,
+              styles.numbers,
+              horizontalLines.solvedLines[index] && styles.solvedNumbers
+            )}
           >
             {col.map((c, index) => (
               <span key={index}>{c}</span>
@@ -101,12 +115,16 @@ export function Board() {
       {board.map((row, lineIndex) => (
         <div style={{ display: "flex", flexDirection: "row" }} key={lineIndex}>
           <div
-            {...stylex.props(styles.rowNumbers, styles.numbers)}
+            {...stylex.props(
+              styles.rowNumbers,
+              styles.numbers,
+              verticalLines.solvedLines[lineIndex] && styles.solvedNumbers
+            )}
             onClick={() => {
               setDebug(solveRow(lineIndex));
             }}
           >
-            {rows[lineIndex].map((c, index) => (
+            {verticalPositions[lineIndex].map((c, index) => (
               <span key={index}>{c}</span>
             ))}
           </div>

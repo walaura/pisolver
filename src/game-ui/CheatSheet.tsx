@@ -5,7 +5,7 @@ import Flexbox from "../styles/Flexbox";
 import { Item, Line, PossibleLines } from "../game/base";
 
 export type Debug = {
-  rows?: PossibleLines;
+  verticalPositions?: PossibleLines;
   validRows?: PossibleLines;
   result?: Line;
   currentRow?: Line;
@@ -16,8 +16,9 @@ const styles = stylex.create({
     position: "fixed",
     top: 0,
     left: 0,
-    border: "2px solid #ddd",
-    fontSize: ".2rem",
+    fontSize: ".3rem",
+    background: "#000",
+    color: "#fff",
   },
 });
 
@@ -35,7 +36,12 @@ function Tile({ item }: { item: Item }) {
 }
 
 export function CheatSheet({
-  debug: { rows = [], result = [], currentRow = [], validRows = [] } = {},
+  debug: {
+    verticalPositions = [],
+    result = [],
+    currentRow = [],
+    validRows = [],
+  } = {},
   onClose,
 }: {
   debug: Debug;
@@ -68,7 +74,7 @@ export function CheatSheet({
           <div>
             All
             <br />
-            {rows.map((row, index) => (
+            {verticalPositions.map((row, index) => (
               <div key={index}>
                 {row.map((item, index) => (
                   <Tile item={item} key={index} />
