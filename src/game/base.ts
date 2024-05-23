@@ -5,6 +5,13 @@ export type Board = Line[];
 
 export type Position = number[];
 
+export type Direction = "horizontal" | "vertical";
+
+export type NextLines = {
+  direction: Direction;
+  line: number;
+};
+
 export type LineStore = {
   possibleLines: PossibleLines[];
   solvedLines: boolean[];
@@ -14,9 +21,9 @@ export type LineStore = {
 export type State = {
   horizontalPositions: Position[];
   verticalPositions: Position[];
-  board: Board;
   verticalLines: LineStore;
   horizontalLines: LineStore;
+  board: Board;
 };
 
 export type Gap = number[];

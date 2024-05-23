@@ -84,10 +84,10 @@ export function Board() {
     board,
     horizontalPositions,
     verticalPositions,
-    horizontalLines,
     verticalLines,
+    horizontalLines,
   } = useStore();
-  const { solveRow, solveCol } = useStoreActions();
+  const { solveHorizontalLine, solveVerticalLine } = useStoreActions();
   const [debug, setDebug] = useState(null);
   return (
     <div {...stylex.props(styles.board)}>
@@ -97,13 +97,13 @@ export function Board() {
         {horizontalPositions.map((col, index) => (
           <div
             onClick={() => {
-              setDebug(solveCol(index));
+              setDebug(solveVerticalLine(index));
             }}
             key={index}
             {...stylex.props(
               styles.colNumbers,
               styles.numbers,
-              horizontalLines.solvedLines[index] && styles.solvedNumbers
+              verticalLines.solvedLines[index] && styles.solvedNumbers
             )}
           >
             {col.map((c, index) => (
@@ -118,10 +118,10 @@ export function Board() {
             {...stylex.props(
               styles.rowNumbers,
               styles.numbers,
-              verticalLines.solvedLines[lineIndex] && styles.solvedNumbers
+              horizontalLines.solvedLines[lineIndex] && styles.solvedNumbers
             )}
             onClick={() => {
-              setDebug(solveRow(lineIndex));
+              setDebug(solveHorizontalLine(lineIndex));
             }}
           >
             {verticalPositions[lineIndex].map((c, index) => (

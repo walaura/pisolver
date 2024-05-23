@@ -1,5 +1,5 @@
 import { Debug } from "../game-ui/CheatSheet";
-import { State } from "./base";
+import { Direction, State } from "./base";
 import { getRow, getCol, writeCol, writeRow } from "./board";
 import {
   getPossibleLines,
@@ -11,29 +11,29 @@ import {
 // const rankLines = (store: State) => {};
 
 const solveLine =
-  (what: "row" | "col") =>
+  (what: Direction) =>
   (store: State, lineIndex: number): [State, Debug] => {
     const lineStore =
-      what === "row" ? store.verticalLines : store.horizontalLines;
+      what === "vertical" ? store.verticalLines : store.horizontalLines;
     const size = lineStore.size;
-    const line =
-      what === "row"
-        ? store.verticalPositions[lineIndex]
-        : store.horizontalPositions[lineIndex];
-    const getLine = what === "row" ? getRow : getCol;
-    const writeLine = what === "row" ? writeRow : writeCol;
+    const position =
+      what === "vertical"
+        ? store.horizontalPositions[lineIndex]
+        : store.verticalPositions[lineIndex];
+    const getLine = what === "vertical" ? getCol : getRow;
+    const writeLine = what === "vertical" ? writeCol : writeRow;
     const maybePossibleLines = lineStore.possibleLines;
     const solvedLines = lineStore.solvedLines;
 
     let possibleLines = maybePossibleLines[lineIndex];
     if (!possibleLines) {
-      console.log("cache miss");
-      possibleLines = getPossibleLines(line, size);
+      possibleLines = getPossibleLines(position, size);
     }
 
     const currentLine = getLine(store.board, lineIndex);
     const validLines = getValidPossibleLines(possibleLines, currentLine);
     const result = getCommonItemsAcrossLines(validLines);
+    console.log(what, currentLine, result);
     const debug = {
       verticalPositions: possibleLines,
       currentRow: currentLine,
@@ -60,5 +60,5 @@ const solveLine =
     ];
   };
 
-export const solveRow = solveLine("row");
-export const solveCol = solveLine("col");
+export const solveVerticalLine = solveLine("vertical");
+export const solveHorizontalLine = solveLine("horizontal");

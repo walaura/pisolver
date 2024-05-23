@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { Debug } from "../game-ui/CheatSheet";
 import { Position, State } from "./base";
-import { solveRow, solveCol } from "./solve";
+import { solveVerticalLine, solveHorizontalLine } from "./solve";
 
 const makeReducerStore = (
   horizontalPositions: Position[],
@@ -15,13 +15,13 @@ const makeReducerStore = (
       .map(() => Array(horizontalPositions.length).fill(null)),
     verticalLines: {
       possibleLines: [],
-      size: horizontalPositions.length,
-      solvedLines: Array(verticalPositions.length).fill(false),
+      size: verticalPositions.length,
+      solvedLines: Array(horizontalPositions.length).fill(false),
     },
     horizontalLines: {
       possibleLines: [],
-      size: verticalPositions.length,
-      solvedLines: Array(horizontalPositions.length).fill(false),
+      size: horizontalPositions.length,
+      solvedLines: Array(verticalPositions.length).fill(false),
     },
   };
 
@@ -41,14 +41,14 @@ const makeReducerStore = (
   return {
     getStore,
     subscribe,
-    solveRow: (rowIndex: number): Debug => {
-      const [newStore, debug] = solveRow(store, rowIndex);
+    solveVerticalLine: (rowIndex: number): Debug => {
+      const [newStore, debug] = solveVerticalLine(store, rowIndex);
       store = newStore;
       notify();
       return debug;
     },
-    solveCol: (colIndex: number): Debug => {
-      const [newStore, debug] = solveCol(store, colIndex);
+    solveHorizontalLine: (colIndex: number): Debug => {
+      const [newStore, debug] = solveHorizontalLine(store, colIndex);
       store = newStore;
       notify();
       return debug;
@@ -94,7 +94,7 @@ export const useStore = () => {
 };
 export const useStoreActions = () => {
   return {
-    solveRow: STORE.solveRow,
-    solveCol: STORE.solveCol,
+    solveVerticalLine: STORE.solveVerticalLine,
+    solveHorizontalLine: STORE.solveHorizontalLine,
   };
 };
