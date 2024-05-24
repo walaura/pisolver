@@ -6,11 +6,20 @@ import { Toolbar } from "./ui/Toolbar";
 import { useStore, useStoreActions } from "./game/store";
 import { Button } from "./ui/Button";
 import { BsBugFill, BsPauseFill, BsPlayFill } from "react-icons/bs";
+import { CheatSheet } from "./game-ui/CheatSheet";
 
-const appStyles = stylex.create({
+const styles = stylex.create({
+  root: {
+    display: "flex",
+    minHeight: "100dvh",
+    "--accent": "#12fff7",
+    "--active": "var(--accent)",
+  },
   center: {
-    minWidth: "100vh",
-    minHeight: "90vh",
+    width: "100%",
+    flex: "1 0 0",
+    display: "flex",
+    alignItems: "center",
   },
   toolbar: {
     position: "absolute",
@@ -21,43 +30,51 @@ const appStyles = stylex.create({
 });
 
 export default function App() {
-  const { isSolving } = useStore();
-  const { solveNextLines, pauseSolving } = useStoreActions();
+  const { isSolving, debug } = useStore();
+  const { solveNextLines, solveNextLine, pauseSolving, toggleDebug } =
+    useStoreActions();
 
   return (
-    <Flexbox styles={appStyles.center} align="center" justify="center">
-      <Flexbox styles={appStyles.toolbar}>
-        <Toolbar
-          end={
-            <>
-              <Button
-                onClick={() => {}}
-                isLabelHidden
-                label="Debug"
-                icon={<BsBugFill />}
-              />
-              {!isSolving ? (
+    <div {...stylex.props(styles.root)}>
+      {debug.shouldDebug ? <CheatSheet /> : null}
+      <Flexbox styles={styles.center} align="center" justify="center">
+        <Flexbox styles={styles.toolbar}>
+          <Toolbar
+            end={
+              <>
+                {debug.shouldDebug ? (
+                  <Button onClick={solveNextLine} label="Next" />
+                ) : null}
                 <Button
-                  onClick={solveNextLines}
-                  icon={<BsPlayFill />}
+                  onClick={toggleDebug}
                   isLabelHidden
-                  label="Solve"
-                  isPrimary
+                  label="Debug"
+                  isActive={debug.shouldDebug}
+                  icon={<BsBugFill />}
                 />
-              ) : (
-                <Button
-                  icon={<BsPauseFill />}
-                  isLabelHidden
-                  onClick={pauseSolving}
-                  label="Pause"
-                  isPrimary
-                />
-              )}
-            </>
-          }
-        />
+                {!isSolving ? (
+                  <Button
+                    onClick={solveNextLines}
+                    icon={<BsPlayFill />}
+                    isLabelHidden
+                    label="Solve"
+                    isPrimary
+                  />
+                ) : (
+                  <Button
+                    icon={<BsPauseFill />}
+                    isLabelHidden
+                    onClick={pauseSolving}
+                    label="Pause"
+                    isPrimary
+                  />
+                )}
+              </>
+            }
+          />
+        </Flexbox>
+        <Board />
       </Flexbox>
-      <Board />
-    </Flexbox>
+    </div>
   );
 }

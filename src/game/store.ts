@@ -1,12 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { Debug } from "../game-ui/CheatSheet";
 import { Board, Direction, Position, PossibleLines } from "./base";
-import {
-  solveVerticalLine,
-  solveHorizontalLine,
-  rankLines,
-  solveNextLine,
-} from "./solve";
+import { solveLine, rankLines, solveNextLine } from "./solve";
+import { deserializePositions } from "./url";
 
 export type NextLines = {
   direction: Direction;
@@ -28,6 +24,10 @@ export type State = {
   horizontalLines: LineStore;
   board: Board;
   nextLines: NextLines[];
+  debug: {
+    shouldDebug: boolean;
+    solveDebug: null | Debug;
+  };
 };
 
 const makeReducerStore = (
@@ -52,6 +52,10 @@ const makeReducerStore = (
       size: horizontalPositions.length,
       solvedLines: Array(verticalPositions.length).fill(false),
     },
+    debug: {
+      shouldDebug: false,
+      solveDebug: null,
+    },
   };
 
   const subs = new Set<() => void>();
@@ -67,20 +71,17 @@ const makeReducerStore = (
   };
   const getStore = () => store;
 
-  return {
-    getStore,
-    subscribe,
-    solveVerticalLine: (rowIndex: number): Debug => {
-      const [newStore, debug] = solveVerticalLine(store, rowIndex);
-      store = newStore;
+  const actions = {
+    solveLine: (direction: Direction, rowIndex: number) => {
+      const [newStore, solveDebug] = solveLine(direction)(store, rowIndex);
+      store = { ...newStore };
+      if (store.debug.shouldDebug) {
+        store.debug = {
+          ...store.debug,
+          solveDebug,
+        };
+      }
       notify();
-      return debug;
-    },
-    solveHorizontalLine: (colIndex: number): Debug => {
-      const [newStore, debug] = solveHorizontalLine(store, colIndex);
-      store = newStore;
-      notify();
-      return debug;
     },
     solveNextLines: () => {
       let maxIndex = 0;
@@ -115,61 +116,65 @@ const makeReducerStore = (
       store.isSolving = false;
       notify();
     },
-    solveNextLine: (): Debug => {
-      const [newStore, debug] = solveNextLine(store);
+    solveNextLine: () => {
+      const [newStore, solveDebug] = solveNextLine(store);
       store = { ...newStore };
+      if (store.debug.shouldDebug) {
+        store.debug = {
+          ...store.debug,
+          solveDebug,
+        };
+      }
       notify();
-      return debug;
     },
     rankLines: () => {
       store = rankLines(store);
       notify();
     },
+    toggleDebug: (to?: boolean) => {
+      store = {
+        ...store,
+        debug: {
+          ...store.debug,
+          shouldDebug: to === undefined ? !store.debug.shouldDebug : to,
+        },
+      };
+      notify();
+    },
+  };
+
+  return {
+    getStore,
+    subscribe,
+    actions,
   };
 };
 
 // [[1, 2], [1, 1], [0], [1, 1], [1, 2]],
 // [[1, 1], [0], [1, 1], [1, 1], [2, 2]]
 
-const STORE = makeReducerStore(
-  [
-    [3],
-    [1, 1],
-    [7, 1, 2],
-    [9, 1, 2],
-    [9, 5],
-    [9, 1, 2],
-    [7, 1, 2],
-    [1, 1],
-    [3],
-  ],
-  [
-    [3],
-    [5],
-    [5],
-    [5],
-    [5],
-    [1, 5, 1],
-    [1, 5, 1],
-    [1, 5, 1],
-    [1, 3, 1],
-    [1, 1],
-    [3],
-    [1],
-    [1],
-    [5],
-    [7],
-  ]
-);
+// http://localhost:1234/solve/3-1,1-7,1,2-9,1,2-9,5-9,1,2-7,1,2-1,1-3/3-5-5-5-5-1,5,1-1,5,1-1,5,1-1,3,1-1,1-3-1-1-5-7
+// http://localhost:1234/solve/1,2-1,1-0-1,1-1,2/1,1-0-1,1-1,1-2,2
+
+const base = (window.location?.pathname ?? "")
+  .split("/")
+  .filter(Boolean)
+  .slice(1);
+console.log(base);
+const prep: [Position[], Position[]] =
+  base.length === 2
+    ? deserializePositions(base[0], base[1])
+    : [
+        [[1, 2], [1, 1], [0], [1, 1], [1, 2]],
+        [[1, 1], [0], [1, 1], [1, 1], [2, 2]],
+      ];
+
+const STORE = makeReducerStore(...prep);
 export const useStore = () => {
   return useSyncExternalStore(STORE.subscribe, () => STORE.getStore());
 };
 export const useStoreActions = () => {
   return {
-    solveVerticalLine: STORE.solveVerticalLine,
-    solveHorizontalLine: STORE.solveHorizontalLine,
-    solveNextLine: STORE.solveNextLine,
-    solveNextLines: STORE.solveNextLines,
-    pauseSolving: STORE.pauseSolving,
+    ...STORE.actions,
   };
 };

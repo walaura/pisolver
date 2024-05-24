@@ -69,7 +69,7 @@ export const rankLines = (store: State): State => {
   return store;
 };
 
-const solveLine =
+export const solveLine =
   (what: Direction) =>
   (store: State, lineIndex: number): [State, Debug] => {
     const lineStore =
@@ -124,6 +124,3 @@ const solveLine =
       },
     ];
   };
-
-export const solveVerticalLine = solveLine("vertical");
-export const solveHorizontalLine = solveLine("horizontal");

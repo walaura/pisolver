@@ -3,6 +3,8 @@ import React from "react";
 import stylex from "@stylexjs/stylex";
 import Flexbox from "../styles/Flexbox";
 import { Item, Line, PossibleLines } from "../game/base";
+import { useStore, useStoreActions } from "../game/store";
+import { serializePositions } from "../game/url";
 
 export type Debug = {
   verticalPositions?: PossibleLines;
@@ -14,12 +16,14 @@ export type Debug = {
 
 const styles = stylex.create({
   root: {
-    position: "fixed",
-    top: 0,
-    left: 0,
     fontSize: ".3rem",
     background: "#000",
     color: "#fff",
+    width: "16rem",
+    overflow: "scroll",
+    position: "sticky",
+    top: 0,
+    maxHeight: "100dvh",
   },
 });
 
@@ -36,19 +40,42 @@ function Tile({ item }: { item: Item }) {
   return item;
 }
 
-export function CheatSheet({
-  debug: {
-    verticalPositions = [],
-    result = [],
-    currentRow = [],
-    validRows = [],
-    didAddToSolution,
-  } = {},
-  onClose,
-}: {
-  debug: Debug;
-  onClose: () => void;
-}) {
+export function CheatSheet() {
+  const state = useStore();
+  const {
+    debug: { solveDebug },
+  } = state;
+
+  const { toggleDebug } = useStoreActions();
+  return (
+    <div {...stylex.props(styles.root)}>
+      <Flexbox gap={8} direction="column">
+        <Flexbox>
+          <button
+            onClick={() => {
+              alert(serializePositions(state));
+            }}
+          >
+            Serialize
+          </button>
+          <button
+            onClick={() => {
+              toggleDebug(false);
+            }}
+          >
+            Close
+          </button>
+        </Flexbox>
+        <hr />
+        {solveDebug ? <SolveCheatSheet solveDebug={solveDebug} /> : null}
+      </Flexbox>
+    </div>
+  );
+}
+
+function SolveCheatSheet({ solveDebug }: { solveDebug: Debug }) {
+  const { result, verticalPositions, currentRow, didAddToSolution, validRows } =
+    solveDebug;
   return (
     <div {...stylex.props(styles.root)}>
       <Flexbox direction="column">
@@ -59,7 +86,7 @@ export function CheatSheet({
         {currentRow.map((item, index) => (
           <Tile item={item} key={index} />
         ))}
-        <button onClick={onClose}>Close</button>
+
         <hr />
         {didAddToSolution === true ? "added" : null}
         <hr />

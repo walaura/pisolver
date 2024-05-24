@@ -23,6 +23,10 @@ const styles = stylex.create({
       transform: "scale(.95)",
     },
   },
+  buttonActive: {
+    borderColor: "var(--accent)",
+    color: "var(--accent)",
+  },
   buttonPrimary: {
     border: 0,
     background: "#000",
@@ -36,6 +40,7 @@ export const Button = ({
   icon,
   onClick,
   isPrimary = false,
+  isActive = false,
   isLabelHidden = false,
 }: {
   label: string;
@@ -43,16 +48,21 @@ export const Button = ({
   icon?: React.ReactNode;
   onClick: () => void;
   isPrimary?: boolean;
+  isActive?: boolean;
 }) => {
   return (
     <button
       {...stylex.props(
         styles.button,
-        isPrimary === true && styles.buttonPrimary
+        isPrimary === true && styles.buttonPrimary,
+        isActive === true && styles.buttonActive
       )}
       aria-label={label}
+      aria-selected={isActive}
       title={isLabelHidden && label}
-      onClick={onClick}
+      onClick={() => {
+        onClick();
+      }}
     >
       <Flexbox gap={4} align="center">
         {icon} {!isLabelHidden && label}
