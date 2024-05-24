@@ -1,8 +1,8 @@
 import React from "react";
-import { useStore, useStoreActions } from "../game/store";
+import { useSolveStore, useSolveStoreActions } from "../store/solve-store";
 
 import { Tile } from "./Tile";
-import { BoardPosition, BoardPositionState } from "./BoardPosition";
+import { BoardPosition, BoardPositionSolveStore } from "./BoardPosition";
 import { BoardLayout } from "./BoardLayout";
 
 export function Board() {
@@ -13,8 +13,8 @@ export function Board() {
     verticalLines,
     horizontalLines,
     nextLines,
-  } = useStore();
-  const { solveLine } = useStoreActions();
+  } = useSolveStore();
+  const { solveLine } = useSolveStoreActions();
 
   const nextLine = nextLines[0];
 
@@ -44,9 +44,9 @@ export function Board() {
             position={position}
             state={
               isSolved
-                ? BoardPositionState.Solved
+                ? BoardPositionSolveStore.Solved
                 : isNext
-                ? BoardPositionState.Next
+                ? BoardPositionSolveStore.Next
                 : null
             }
           />

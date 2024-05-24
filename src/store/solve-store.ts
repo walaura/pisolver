@@ -1,8 +1,9 @@
 import { useSyncExternalStore } from "react";
 import { Debug } from "../game-ui/CheatSheet";
-import { Board, Direction, Position, PossibleLines } from "./base";
-import { solveLine, rankLines, solveNextLine } from "./solve";
-import { deserializePositions } from "./url";
+import { Board, Direction, Position, PossibleLines } from "../game/base";
+import { solveLine, rankLines, solveNextLine } from "../game/solve";
+import { deserializePositions } from "../game/url";
+import { wireStore } from "./wire";
 
 export type NextLines = {
   direction: Direction;
@@ -16,7 +17,7 @@ export type LineStore = {
   size: number;
 };
 
-export type State = {
+export type SolveStore = {
   isSolving: boolean;
   horizontalPositions: Position[];
   verticalPositions: Position[];
@@ -30,11 +31,11 @@ export type State = {
   };
 };
 
-const makeReducerStore = (
+const makeSolveStore = (
   horizontalPositions: Position[],
   verticalPositions: Position[]
 ) => {
-  let store: State = {
+  let store: SolveStore = {
     isSolving: false,
     horizontalPositions,
     verticalPositions,
@@ -57,18 +58,7 @@ const makeReducerStore = (
       solveDebug: null,
     },
   };
-
-  const subs = new Set<() => void>();
-
-  const subscribe = (callback) => {
-    subs.add(callback);
-    return () => {
-      subs.delete(callback);
-    };
-  };
-  const notify = () => {
-    subs.forEach((sub) => sub());
-  };
+  const { notify, subscribe } = wireStore();
   const getStore = () => store;
 
   const actions = {
@@ -160,7 +150,6 @@ const base = (window.location?.pathname ?? "")
   .split("/")
   .filter(Boolean)
   .slice(1);
-console.log(base);
 const prep: [Position[], Position[]] =
   base.length === 2
     ? deserializePositions(base[0], base[1])
@@ -169,11 +158,11 @@ const prep: [Position[], Position[]] =
         [[1, 1], [0], [1, 1], [1, 1], [2, 2]],
       ];
 
-const STORE = makeReducerStore(...prep);
-export const useStore = () => {
+const STORE = makeSolveStore(...prep);
+export const useSolveStore = () => {
   return useSyncExternalStore(STORE.subscribe, () => STORE.getStore());
 };
-export const useStoreActions = () => {
+export const useSolveStoreActions = () => {
   return {
     ...STORE.actions,
   };

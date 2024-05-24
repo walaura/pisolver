@@ -34,7 +34,7 @@ const directionStyles = stylex.create({
   },
 });
 
-export enum BoardPositionState {
+export enum BoardPositionSolveStore {
   Solved,
   Next,
 }
@@ -46,7 +46,7 @@ export function BoardPosition({
   direction,
 }: {
   onClick: () => void;
-  state: BoardPositionState | null;
+  state: BoardPositionSolveStore | null;
   position: Position;
   direction: Direction;
 }) {
@@ -56,8 +56,8 @@ export function BoardPosition({
       {...stylex.props(
         directionStyles[direction],
         styles.position,
-        state === BoardPositionState.Solved && styles.isSolved,
-        state === BoardPositionState.Next && styles.isNext
+        state === BoardPositionSolveStore.Solved && styles.isSolved,
+        state === BoardPositionSolveStore.Next && styles.isNext
       )}
     >
       {position.map((c, index) => (

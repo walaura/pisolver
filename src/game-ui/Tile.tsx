@@ -30,12 +30,14 @@ const styles = stylex.create({
     right: left ? null : -1,
   }),
   tileSolved: {
-    background: "linear-gradient(to bottom right, #b3ffab, #12fff7);",
-    boxShadow: "0 0 2px lime",
+    background: "var(--accent) linear-gradient(to bottom right, black, #666);",
+    backgroundBlendMode: "color-burn",
+    boxShadow: "0 0 8px color-mix(in srgb, var(--accent) 50%, transparent)",
     borderRadius: 2,
     width: "calc(var(--tile-size) - 8px)",
     height: "calc(var(--tile-size) - 8px)",
     zIndex: 10,
+    overflow: "hidden",
   },
   tileActive: {
     background: "#000",

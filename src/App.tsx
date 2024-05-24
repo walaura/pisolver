@@ -3,18 +3,18 @@ import Flexbox from "./styles/Flexbox";
 import stylex from "@stylexjs/stylex";
 import { Board } from "./game-ui/Board";
 import { Toolbar } from "./ui/Toolbar";
-import { useStore, useStoreActions } from "./game/store";
+import { useSolveStore, useSolveStoreActions } from "./store/solve-store";
 import { Button } from "./ui/Button";
 import { BsBugFill, BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { CheatSheet } from "./game-ui/CheatSheet";
 
 const styles = stylex.create({
-  root: {
+  root: (tokens: { accent: string }) => ({
     display: "flex",
     minHeight: "100dvh",
-    "--accent": "#12fff7",
+    "--accent": tokens.accent ?? "#12fff7",
     "--active": "var(--accent)",
-  },
+  }),
   center: {
     width: "100%",
     flex: "1 0 0",
@@ -30,12 +30,12 @@ const styles = stylex.create({
 });
 
 export default function App() {
-  const { isSolving, debug } = useStore();
+  const { isSolving, debug } = useSolveStore();
   const { solveNextLines, solveNextLine, pauseSolving, toggleDebug } =
-    useStoreActions();
+    useSolveStoreActions();
 
   return (
-    <div {...stylex.props(styles.root)}>
+    <div {...stylex.props(styles.root({ accent: "#12fff7" }))}>
       {debug.shouldDebug ? <CheatSheet /> : null}
       <Flexbox styles={styles.center} align="center" justify="center">
         <Flexbox styles={styles.toolbar}>

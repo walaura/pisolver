@@ -3,7 +3,7 @@ import React from "react";
 import stylex from "@stylexjs/stylex";
 import Flexbox from "../styles/Flexbox";
 import { Item, Line, PossibleLines } from "../game/base";
-import { useStore, useStoreActions } from "../game/store";
+import { useSolveStore, useSolveStoreActions } from "../store/solve-store";
 import { serializePositions } from "../game/url";
 
 export type Debug = {
@@ -41,12 +41,12 @@ function Tile({ item }: { item: Item }) {
 }
 
 export function CheatSheet() {
-  const state = useStore();
+  const state = useSolveStore();
   const {
     debug: { solveDebug },
   } = state;
 
-  const { toggleDebug } = useStoreActions();
+  const { toggleDebug } = useSolveStoreActions();
   return (
     <div {...stylex.props(styles.root)}>
       <Flexbox gap={8} direction="column">

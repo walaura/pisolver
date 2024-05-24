@@ -10,9 +10,9 @@ import {
   doLinesMatch,
   getSolvedLineItems,
 } from "./line";
-import { NextLines, State } from "./store";
+import { NextLines, SolveStore } from "../store/solve-store";
 
-export function solveNextLine(store: State): [State, Debug] {
+export function solveNextLine(store: SolveStore): [SolveStore, Debug] {
   if (!store.nextLines.length) {
     store = rankLines(store);
   }
@@ -23,7 +23,7 @@ export function solveNextLine(store: State): [State, Debug] {
   return solveLine(nextLine.direction)(store, nextLine.line);
 }
 
-export const rankLines = (store: State): State => {
+export const rankLines = (store: SolveStore): SolveStore => {
   let nextLines: NextLines[] = [];
   for (let line = 0; line < store.horizontalPositions.length; line++) {
     const { freeSpaces: score } = getGapDataForPosition(
@@ -71,7 +71,7 @@ export const rankLines = (store: State): State => {
 
 export const solveLine =
   (what: Direction) =>
-  (store: State, lineIndex: number): [State, Debug] => {
+  (store: SolveStore, lineIndex: number): [SolveStore, Debug] => {
     const lineStore =
       what === "vertical" ? store.verticalLines : store.horizontalLines;
     const size = lineStore.size;
