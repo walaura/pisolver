@@ -1,6 +1,6 @@
 import stylex from "@stylexjs/stylex";
 import React from "react";
-import { Item } from "../game/base";
+import { Item } from "../solver/base";
 
 const pop = stylex.keyframes({
   "0%": { transform: "scale(0)" },
@@ -71,7 +71,7 @@ export const Tile = ({
   item,
 }: {
   state?: "active" | "solved";
-  item: Item;
+  item?: Item;
 }) => (
   <div {...stylex.props(styles.tile)}>
     <div {...stylex.props(styles.tileCorner(0, 0))} />

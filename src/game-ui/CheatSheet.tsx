@@ -2,9 +2,9 @@ import React from "react";
 
 import stylex from "@stylexjs/stylex";
 import Flexbox from "../styles/Flexbox";
-import { Item, Line, PossibleLines } from "../game/base";
+import { Item, Line, PossibleLines } from "../solver/base";
 import { useSolveStore, useSolveStoreActions } from "../store/solve-store";
-import { serializePositions } from "../game/url";
+import { serializePositions } from "../solver/url";
 
 export type Debug = {
   verticalPositions?: PossibleLines;

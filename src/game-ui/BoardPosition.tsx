@@ -1,7 +1,7 @@
 import stylex from "@stylexjs/stylex";
 import React from "react";
 
-import { Direction, Position } from "../game/base";
+import { Direction, Position } from "../solver/base";
 
 const styles = stylex.create({
   position: {
@@ -46,7 +46,7 @@ export function BoardPosition({
   direction,
 }: {
   onClick: () => void;
-  state: BoardPositionSolveStore | null;
+  state?: BoardPositionSolveStore | null;
   position: Position;
   direction: Direction;
 }) {

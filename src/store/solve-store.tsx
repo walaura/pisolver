@@ -1,9 +1,9 @@
-import { useSyncExternalStore } from "react";
+import { createContext, useContext, useRef, useSyncExternalStore } from "react";
 import { Debug } from "../game-ui/CheatSheet";
-import { Board, Direction, Position, PossibleLines } from "../game/base";
-import { solveLine, rankLines, solveNextLine } from "../game/solve";
-import { deserializePositions } from "../game/url";
-import { wireStore } from "./wire";
+import { Board, Direction, Position, PossibleLines } from "../solver/base";
+import { solveLine, rankLines, solveNextLine } from "../solver/solve";
+import { getStoreWire } from "./wire";
+import React from "react";
 
 export type NextLines = {
   direction: Direction;
@@ -58,7 +58,7 @@ const makeSolveStore = (
       solveDebug: null,
     },
   };
-  const { notify, subscribe } = wireStore();
+  const { notify, subscribe } = getStoreWire();
   const getStore = () => store;
 
   const actions = {
@@ -146,24 +146,32 @@ const makeSolveStore = (
 // http://localhost:1234/solve/3-1,1-7,1,2-9,1,2-9,5-9,1,2-7,1,2-1,1-3/3-5-5-5-5-1,5,1-1,5,1-1,5,1-1,3,1-1,1-3-1-1-5-7
 // http://localhost:1234/solve/1,2-1,1-0-1,1-1,2/1,1-0-1,1-1,1-2,2
 
-const base = (window.location?.pathname ?? "")
-  .split("/")
-  .filter(Boolean)
-  .slice(1);
-const prep: [Position[], Position[]] =
-  base.length === 2
-    ? deserializePositions(base[0], base[1])
-    : [
-        [[1, 2], [1, 1], [0], [1, 1], [1, 2]],
-        [[1, 1], [0], [1, 1], [1, 1], [2, 2]],
-      ];
+const SolveStoreCtx =
+  createContext<React.MutableRefObject<ReturnType<typeof makeSolveStore>>>(
+    null
+  );
 
-const STORE = makeSolveStore(...prep);
 export const useSolveStore = () => {
-  return useSyncExternalStore(STORE.subscribe, () => STORE.getStore());
+  return useSyncExternalStore(useContext(SolveStoreCtx).current.subscribe, () =>
+    useContext(SolveStoreCtx).current.getStore()
+  );
 };
 export const useSolveStoreActions = () => {
   return {
-    ...STORE.actions,
+    ...useContext(SolveStoreCtx).current.actions,
   };
+};
+
+export const SolveStoreProvider = ({
+  children,
+  horizontalPositions,
+  verticalPositions,
+}: {
+  children: React.ReactNode;
+  horizontalPositions: Position[];
+  verticalPositions: Position[];
+}) => {
+  const { Provider } = SolveStoreCtx;
+  const store = useRef(makeSolveStore(horizontalPositions, verticalPositions));
+  return <Provider value={store}>{children}</Provider>;
 };

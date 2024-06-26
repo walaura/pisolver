@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 
 import stylex from "@stylexjs/stylex";
-import { Direction } from "../game/base";
+import { Direction } from "../solver/base";
 import Flexbox from "../styles/Flexbox";
 
 const styles = stylex.create({

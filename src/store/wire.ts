@@ -1,9 +1,9 @@
-type StoreWire = {
+interface StoreWire {
   subscribe: (callback: () => void) => () => void;
   notify: () => void;
-};
+}
 
-export const wireStore = (): StoreWire => {
+export const getStoreWire = (): StoreWire => {
   const subs = new Set<() => void>();
   const subscribe = (callback) => {
     subs.add(callback);

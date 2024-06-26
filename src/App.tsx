@@ -1,12 +1,8 @@
 import React from "react";
-import Flexbox from "./styles/Flexbox";
 import stylex from "@stylexjs/stylex";
-import { Board } from "./game-ui/Board";
-import { Toolbar } from "./ui/Toolbar";
-import { useSolveStore, useSolveStoreActions } from "./store/solve-store";
-import { Button } from "./ui/Button";
-import { BsBugFill, BsPauseFill, BsPlayFill } from "react-icons/bs";
-import { CheatSheet } from "./game-ui/CheatSheet";
+import { useRouter } from "./useRouter";
+import SolveRoute from "./route/solve-route";
+import SetupRoute from "./route/setup-route";
 
 const styles = stylex.create({
   root: (tokens: { accent: string }) => ({
@@ -30,51 +26,12 @@ const styles = stylex.create({
 });
 
 export default function App() {
-  const { isSolving, debug } = useSolveStore();
-  const { solveNextLines, solveNextLine, pauseSolving, toggleDebug } =
-    useSolveStoreActions();
-
+  const route = useRouter();
+  console.log(route);
   return (
     <div {...stylex.props(styles.root({ accent: "#12fff7" }))}>
-      {debug.shouldDebug ? <CheatSheet /> : null}
-      <Flexbox styles={styles.center} align="center" justify="center">
-        <Flexbox styles={styles.toolbar}>
-          <Toolbar
-            end={
-              <>
-                {debug.shouldDebug ? (
-                  <Button onClick={solveNextLine} label="Next" />
-                ) : null}
-                <Button
-                  onClick={toggleDebug}
-                  isLabelHidden
-                  label="Debug"
-                  isActive={debug.shouldDebug}
-                  icon={<BsBugFill />}
-                />
-                {!isSolving ? (
-                  <Button
-                    onClick={solveNextLines}
-                    icon={<BsPlayFill />}
-                    isLabelHidden
-                    label="Solve"
-                    isPrimary
-                  />
-                ) : (
-                  <Button
-                    icon={<BsPauseFill />}
-                    isLabelHidden
-                    onClick={pauseSolving}
-                    label="Pause"
-                    isPrimary
-                  />
-                )}
-              </>
-            }
-          />
-        </Flexbox>
-        <Board />
-      </Flexbox>
+      {route.route === "solve" ? <SolveRoute route={route} /> : null}
+      {route.route === "home" ? <SetupRoute /> : null}
     </div>
   );
 }
