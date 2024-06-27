@@ -56,7 +56,7 @@ export function getGapDataForPosition(
   const freeSpaces = rowLength + 1 - allNumbers;
   const count = position.length - 1;
 
-  const maxNumberInGap = Math.ceil(freeSpaces / count);
+  const maxNumberInGap = rowLength - (allNumbers + (position.length - 3));
 
   return {
     maxNumberInGap,
